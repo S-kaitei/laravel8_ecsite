@@ -2,27 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Models\Cart_items;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class ItemController extends Controller
+class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        // リクエストパラメタにkeywordが入っていたら検索機能を動かす
-        if($request->has('keyword')) {
-            // SQLのlike句でitemsテーブルを検索する
-            $items = Item::where('name', 'like', '%'.$request->get('keyword').'%')->paginate(10);
-        }else{
-            $items = Item::paginate(10);
-        }
-
-        return view('item/index', ['items' => $items]);
+        //
     }
 
     /**
@@ -43,27 +37,36 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Cart_items::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'item_id' => $request->post('item_id'),
+            ],
+            [
+                'quantity' => DB::raw('quantity + ' . $request->post('quantity')),
+            ]
+        );
+        return redirect('/')->with('flash_message', 'カートに追加しました');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Item  $item
+     * @param  \App\Models\Cart_items  $cart
      * @return \Illuminate\Http\Response
      */
-    public function show(Item $item)
+    public function show(Cart_items $cart)
     {
-        return view('item/show', ['item' => $item]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Item  $item
+     * @param  \App\Models\Cart_items  $cart
      * @return \Illuminate\Http\Response
      */
-    public function edit(Item $item)
+    public function edit(Cart_items $cart)
     {
         //
     }
@@ -72,10 +75,10 @@ class ItemController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Item  $item
+     * @param  \App\Models\Cart  $cart
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Item $item)
+    public function update(Request $request, Cart $cart)
     {
         //
     }
@@ -83,10 +86,10 @@ class ItemController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Item  $item
+     * @param  \App\Models\Cart  $cart
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Item $item)
+    public function destroy(Cart $cart)
     {
         //
     }

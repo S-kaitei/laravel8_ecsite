@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,5 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/', [ItemController::class, 'index']);
+Route::get('/item/{item}', [ItemController::class, 'show']);
+Route::post('/cart_item', [CartController::class, 'store']);
