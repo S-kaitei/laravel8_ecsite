@@ -16,7 +16,17 @@ class CartController extends Controller
      */
     public function index()
     {
-        //
+        $cart_items = Cart_items::select('cart_items.*', 'items.name', 'items.amount')
+            ->where('user_id', Auth::id())
+            ->join('items', 'items.id', '=', 'cart_items.item_id')
+            ->get();
+
+        $subtotal = 0;
+        foreach($cart_items as $cart_item){
+            $subtotal += $cart_item->amount * $cart_item->quantity;
+        }
+
+        return view('cart_item/index', ['cart_items' => $cart_items, 'subtotal' => $subtotal]);
     }
 
     /**
@@ -75,22 +85,32 @@ class CartController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Cart_items  $cart
+     * @param  \App\Models\Cart_items  $cart_items
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Cart_items $cart)
+    public function update(Request $request, $id)
     {
-        //
+        $cart_item = Cart_items::findOrFail($id);
+
+        $cart_item->update([
+            'quantity' => $request->post('quantity'),
+        ]);
+
+        return redirect('cart_item')->with('flash_message', 'カートを更新しました');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Cart_items  $cart
+     * @param  \App\Models\Cart_items  $cart_items
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Cart_items $cart)
+    public function destroy($id)
     {
-        //
+        $cart_item = Cart_items::findOrFail($id);
+
+        $cart_item->delete();
+
+        return redirect('cart_item')->with('flash_message', 'カートから削除しました');
     }
 }

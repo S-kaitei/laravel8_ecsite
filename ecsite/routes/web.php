@@ -22,4 +22,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/', [ItemController::class, 'index']);
 Route::get('/item/{item}', [ItemController::class, 'show']);
+
+Route::get('/cart_item', [CartController::class, 'index']);
 Route::post('/cart_item', [CartController::class, 'store']);
+Route::delete('/cart_item/{cart_item}', [CartController::class, 'destroy']);
+Route::put('/cart_item/{cart_item}', [CartController::class, 'update']);
