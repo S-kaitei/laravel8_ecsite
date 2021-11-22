@@ -113,4 +113,29 @@ class CartController extends Controller
 
         return redirect('cart_item')->with('flash_message', 'カートから削除しました');
     }
+
+    public function buy()
+    {
+        $cart_items = Cart_items::select('cart_items.*', 'items.name', 'items.amount')
+                                    ->where('user_id', Auth::id())
+                                    ->join('items', 'items.id', '=', 'cart_items.item_id')
+                                    ->get();
+        $subtotal = 0;
+        foreach($cart_items as $cart_item){
+            $subtotal += $cart_item->amount * $cart_item->quantity;
+        }
+
+        return view('buy/index', ['cart_items' => $cart_items, 'subtotal' => $subtotal]);
+    }
+
+    public function buy_store(Request $request)
+    {
+        if($request->has('post') ){
+            Cart_items::where('user_id', Auth::id())->delete();
+            return view('buy/complete');
+        }
+
+        $request->flash();
+        return $this->index();
+    }
 }
