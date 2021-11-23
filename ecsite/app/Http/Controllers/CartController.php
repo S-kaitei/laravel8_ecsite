@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart_items;
+use App\Mail\Buy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CartController extends Controller
 {
@@ -131,6 +133,7 @@ class CartController extends Controller
     public function buy_store(Request $request)
     {
         if($request->has('post') ){
+            Mail::to($request->user())->send(new Buy());
             Cart_items::where('user_id', Auth::id())->delete();
             return view('buy/complete');
         }
